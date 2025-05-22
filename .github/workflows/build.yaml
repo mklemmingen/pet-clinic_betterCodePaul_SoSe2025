@@ -16,7 +16,6 @@ jobs:
         with:
           distribution: temurin
           java-version: 11
-          cache: maven
 
       - name: Compile with Maven
         run: mvn package
