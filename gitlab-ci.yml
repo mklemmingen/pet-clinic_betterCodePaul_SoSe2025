@@ -4,13 +4,18 @@ stages:
   - push_dev_docker_image
   
 variables:
-
+  DOCKER_DRIVER: overlay2
+  GITHUB_ACCESSTOKEN: $CICD
 
 build_dev_artifacts:
   image: maven:3.6.0-jdk-8
   stage: build_artifacts
   script:
     # Hier die Befehle um die App zu bauen
+    - mvn package
+    # visualise
+    - cd target
+    - ls
   artifacts:
     paths:
       - target/*
@@ -23,4 +28,7 @@ push_dev_docker_image:
     - docker:19.03.1-dind
   script:
     # Hier die Befehle zum Docker Image bauen und pushen
+    - docker login ghcr.io -u mklemmingen -p $GITHUB_ACCESSTOKEN
+    - docker build -t ghcr.io/mklemmingen/pet-clinic_bettercodepaul_sose2025:dev-$CI_PIPELINE_ID .
+    - docker push ghcr.io/mklemmingen/pet-clinic_bettercodepaul_sose2025:dev-$CI_PIPELINE_ID
   allow_failure: false
