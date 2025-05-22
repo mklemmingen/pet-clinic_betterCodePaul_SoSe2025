@@ -1,23 +1,32 @@
 name: Docker Build and Release
-on: [ push ]
+on: [push]
 env:
-#### An dieser Stelle müssen eure persönlichen Umgebungsvariablen eingetragen werden
-  # Tipp: Die Token/der API-Key werden als Secrets in den Repository-Settings eingetragen und hier referenziert.
-  GITHUB_ACCESSTOKEN: ${{ secrets.GITHUB_ACCESSTOKEN }}
+  IMAGE_NAME: ghcr.io/mklemmingen/pet-clinic_bettercodepaul_sose2025
+  GITHUB_ACCESSTOKEN: ${{ secrets.CICD }}
+
 jobs:
   compile:
-    name: Compile
+    name: Compile and Push
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup Java
-      uses: actions/setup-java@v2
-      with:
-        distribution: temurin
-        java-version: 11
-        cache: maven
-  
-    - name: Compile, build and push
-      run: |
-        #### AUFGABE COMPILE, DOCKER BUILD UND PUSH
-          # hier ist Platz für maven package und docker build
+      - uses: actions/checkout@v2
+
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: temurin
+          java-version: 11
+          cache: maven
+
+      - name: Compile with Maven
+        run: mvn package
+
+      - name: Docker login
+        run: echo "$GITHUB_ACCESSTOKEN" | docker login ghcr.io -u mklemmingen --password-stdin
+
+      - name: Docker build and push
+        run: |
+          docker build -t $IMAGE_NAME:latest -f Dockerfile .
+          echo Maven und Docker Build ausgeführt
+          docker push $IMAGE_NAME:latest
+          echo Docker Push ausgeführt
