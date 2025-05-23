@@ -9,4 +9,6 @@ COPY target/spring-petclinic*.jar .
 
 ###ENTRYPOINT java -jar spring-petclinic*.jar
 
-CMD java -Xmx512m -Xms512m -jar spring-petclinic*.jar --server.port=${PORT}
+EXPOSE 8080
+
+CMD java -Xmx512m -Xms512m -jar spring-petclinic*.jar --server.port=8080
